@@ -29,12 +29,12 @@ def suscrip ():
             #Guarda los datos en el diccionario
         usuarios[id_user] = nombre
         suscrito = True
-        user_actual = id_user  #guarda quien se logueo
+        user_actual = id_user
         print('\nYa estas suscrito!!')
         
         return True
-   
-        
+    
+            
 #Cancelar Suscripcion
 def canc_suscrip():
     global suscrito, user_actual
@@ -78,4 +78,3 @@ def menu_suscrip():
                 return
             else:
                 print('Opcion invalida. Elige 1 o 2')
-                   

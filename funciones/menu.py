@@ -8,7 +8,7 @@ import ofertas
 MODO_DEBUG = True
 
 def mostrar_hora_actual():
-    print(f'\nHora actual simulada: {tiempo_actual.strftime('%Y-%m-%d %H:%M')}')
+    print(f'\nHora actual: {tiempo_actual.strftime('%Y-%m-%d | %H:%M')}')
     
 def mostrar_encabezado():
     print('\n' + '=' * 40)
