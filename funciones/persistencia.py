@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
-
-from reservas import reservas_activas, juegos_reservados, tiempo_actual
+from estado import reservas_activas, juegos_reservados, tiempo_actual
 from tienda_arcane import juegos_disponibles, compras_usuarios
 import suscripcion
 

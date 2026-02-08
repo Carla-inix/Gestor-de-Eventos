@@ -1,5 +1,5 @@
 import suscripcion
-from reservas import historial_reservas
+from estado import historial_reservas
 
 
 def contar_reservas_usuario(id_usuario):
@@ -12,7 +12,9 @@ def contar_reservas_usuario(id_usuario):
 
 
 def mostrar_ofertas():
-    print('\n   Ofertas Disponibles\n')
+    print('\n' + '=' * 40)
+    print('          Ofertas Disponibles')
+    print('=' * 40)
 
     if suscripcion.user_actual is None:
         print('Debes suscribirte primero')
@@ -27,10 +29,12 @@ def mostrar_ofertas():
     print(f'Reservas realizadas: {total}')
 
     if suscripcion.cupon_usado:
-        print('Cupón utilizado')
+        print('Cupón utilizado⭕')
+        
     elif total >= 5:
         suscripcion.cupon_disponible = True
         print('Cupón DISPONIBLE (20%)')
+        
     else:
         print(f'Te faltan {5 - total} reservas para desbloquear el cupón')
 

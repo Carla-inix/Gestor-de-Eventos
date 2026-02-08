@@ -1,5 +1,7 @@
+from reservas import reservar
+from estado import tiempo_actual
+from horarios_r import avanzar_tiempo, reset_tiempo
 import suscripcion
-from reservas import reservar, avanzar_tiempo, tiempo_actual, reservas_activas, juegos_reservados, reset_tiempo
 import mis_reservas
 import tienda_arcane
 import ofertas
@@ -17,9 +19,9 @@ def mostrar_encabezado():
     print('Horario: 09:00 AM - 11:00 PM')
     print('Contacto: arcane@gaming.com | Tel: +53 53529701')
     print('-' * 40)
+    
  
 def menu_principal():
-    
     while True:
         mostrar_encabezado()
         mostrar_hora_actual()
@@ -27,23 +29,22 @@ def menu_principal():
         
         print('\n1. Reservar')
         print('2. Mis Reservas')
-        print('3. Comprar Juegos')
+        print('3. Tienda Arcane')
         print('4. Suscripción')
         print('5. Ofertas')
         print('6. Salir')
         
         if MODO_DEBUG:
-            print('7. Avanzar Tiempo (Modo Prueba)')
+            print('\n7. Avanzar Tiempo (Modo Prueba)')
 
         selecc = input('\nElige una opción: ')
         if selecc == '1':
             if suscripcion.suscrito:
                 reservar()
             else:
-                print('\nPara poder reservar necesitas estar suscrito')
+                print('\nPara reservar necesitas estar suscrito/a')
     
                 if suscripcion.suscrip():
-                    print('\nYa puedes reservar')
                     reservar()
                     
         elif selecc == '2':
@@ -53,10 +54,9 @@ def menu_principal():
             if suscripcion.suscrito:
                 tienda_arcane.menu_tienda()
             else:
-                print('\nPara poder comprar necesitas estar suscrito')
+                print('\nPara acceder necesitas estar suscrito/a')
     
                 if suscripcion.suscrip():
-                    print('\nYa puedes comprar')
                     tienda_arcane.menu_tienda()
         
         elif selecc == '4':
@@ -75,7 +75,7 @@ def menu_principal():
         
         elif selecc == '7' and MODO_DEBUG:
             while True:
-                print('\nMODO PRUEBA / SIMULACIÓN')
+                print('\nMODO PRUEBA / SIMULACIÓN\n')
                 print('1. Avanzar tiempo')
                 print('2. Resetear tiempo y reservas')
                 print('3. Atrás')
@@ -86,16 +86,16 @@ def menu_principal():
                     try:
                         horas = int(input('Cuántas horas deseas avanzar?: '))
                         if horas <= 0:
-                            print('Debes ingresar un número positivo')
+                            print('\nIngresa un número válido\n')
                         else:
                             avanzar_tiempo(horas)
                     except ValueError:
-                        print('Ingresa un número válido')
+                        print('\nIngresa un número válido\n')
 
                 elif opcion_test == '2':
                     confirmar = input(
                         '\nEsto eliminará reservas y reiniciará el tiempo\n'
-                        'Estás seguro? si/no: '
+                        'Estás seguro/a? si/no: '
                     ).lower().strip()
 
                     if confirmar == 'si':
@@ -105,9 +105,9 @@ def menu_principal():
                     break
 
                 else:
-                    print('Opción inválida')
+                    print('\nOpción inválida')
                       
         else:
-            print('Opción inválida. Elige 1-7')
+            print('\nOpción inválida. Elige 1-7')
     
 menu_principal()

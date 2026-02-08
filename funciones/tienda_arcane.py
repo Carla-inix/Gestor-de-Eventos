@@ -1,51 +1,22 @@
 import suscripcion
 from datetime import datetime
+from inputs import pedir_numero
 
 #DATOS
 #=======================
 
 juegos_disponibles = [
-    {'nombre': 'FIFA 24', 'precio': 350, 'stock': 2, 'descripcion': 'ss'},
-    {'nombre': 'Assassins Creed: Black Flag', 'precio': 500, 'stock': 4, 'descripcion': 'aa'},
-    {'nombre': 'Spider-Man 2', 'precio': 500, 'stock': 4, 'descripcion': 'vv'},
-    {'nombre': 'Mario Kart 8', 'precio': 400, 'stock': 3, 'descripcion': 'nn'},
-    {'nombre': 'Bramble', 'precio': 500, 'stock': 2, 'descripcion': 'dd'},
-    {'nombre': 'Resident Evil 4 Remake', 'precio': 600, 'stock': 1, 'descripcion': 'bb'},
+    {'nombre': 'FIFA 24', 'precio': 350, 'stock': 2, 'descripcion': 'Simulador de fútbol con equipos y ligas oficiales'},
+    {'nombre': 'Assassins Creed: Black Flag', 'precio': 500, 'stock': 4, 'descripcion': 'Aventura de piratas con exploración naval y combate'},
+    {'nombre': 'Spider-Man 2', 'precio': 500, 'stock': 4, 'descripcion': 'Acción y mundo abierto controlando a Spider-Man'},
+    {'nombre': 'Mario Kart 8', 'precio': 400, 'stock': 3, 'descripcion': 'Carreras divertidas con personajes de Nintendo'},
+    {'nombre': 'Bramble', 'precio': 500, 'stock': 2, 'descripcion': 'Aventura oscura inspirada en cuentos nórdicos'},
+    {'nombre': 'Resident Evil 4 Remake', 'precio': 600, 'stock': 1, 'descripcion': 'Súrvival horror con acción y enemigos aterradores'},
 ]
 
+# Historial de compras por usuario
 compras_usuarios = {}
 
-def pedir_numero(mensaje, minimo=None, maximo=None, atras=False):
-
-    while True:
-        selecc = input(mensaje).strip().lower()
-
-        if atras and selecc == 'atras':
-            return 'atras'
-
-        if selecc == '':
-            print('\nDebes ingresar un número')
-            continue
-
-        if not selecc.isdigit():
-            print('\nIngresa un número válido\n')
-            continue
-
-        if selecc != str(int(selecc)):
-            print('\nNo se permiten ceros al inicio\n')
-            continue
-
-        numero = int(selecc)
-
-        if minimo is not None and numero < minimo:
-            print(f'\nMínimo {minimo}')
-            continue
-
-        if maximo is not None and numero > maximo:
-            print(f'\nMáximo {maximo}')
-            continue
-
-        return numero
 
 #FUNCIONES
 #========================
@@ -54,6 +25,7 @@ def comprar_juegos():
     while True:
         user = suscripcion.user_actual
 
+        # Restricción: máximo 2 compras por día
         if compras_hoy(user, compras_usuarios) >= 2:
             print('\nSolo puedes hacer 2 compras por día\n')
             input('Presiona Enter para volver...')
@@ -74,21 +46,17 @@ def comprar_juegos():
             else:
                 print('AGOTADO⭕')
         
-        print('\n0. Atrás')
-        selecc = input('Selecciona un juego: ').strip()
+        print('\nAtrás')
+        
+        selecc = pedir_numero(
+            'Selecciona un juego: ',
+            minimo=1,
+            maximo=len(juegos_disponibles),
+            atras=True
+        )
 
-        if selecc == '0':
+        if selecc == 'atras':
             return
-
-        if not selecc.isdigit():
-            print('\nIngresa un número válido')
-            continue
-
-        selecc = int(selecc)
-
-        if selecc < 1 or selecc > len(juegos_disponibles):
-            print('\nJuego inválido')
-            continue
 
         juego = juegos_disponibles[selecc - 1]
 
@@ -96,57 +64,51 @@ def comprar_juegos():
             print('\nEste juego está agotado')
             continue
 
-        cantidad = input('\nCantidad a comprar: ').strip()
+        cantidad = pedir_numero(
+            '\nCantidad a comprar: ',
+            minimo=1,
+            maximo=juego['stock'],
+            atras=True
+        )
 
-        if not cantidad.isdigit():
-            print('\nCantidad inválida')
-            continue
-
-        cantidad = int(cantidad)
-
-        if cantidad <= 0:
-            print('\nCantidad inválida')
-            continue
-
-        if cantidad > juego['stock']:
-            print('\nNo hay suficiente stock')
+        if cantidad == 'atras':
             continue
 
         costo = cantidad * juego['precio']
         
-        
+        # Restricción: máximo 3 copias del mismo juego por usuario
         if copias_compradas(user, juego['nombre']) + cantidad > 3:
             print('\nNo puedes comprar más de 3 copias del mismo juego')
             continue
 
-        confirmar = input(
-            f'\nCosto: {costo}$\nConfirmar compra? si/no: '
-        ).lower().strip()
+        while True:    
+            confirmar = input(
+                f'\nCosto total: {costo}$\nConfirmar compra? si/no: '
+            ).lower().strip()
 
-        if confirmar == 'si':
+            if confirmar == 'si':
+                juego['stock'] -= cantidad
 
-            # Descontar stock
-            juego['stock'] -= cantidad
+                # Registrar compra
+                compras_usuarios.setdefault(user, []).append({
+                    'fecha': datetime.now(),
+                    'juego': juego['nombre'],
+                    'precio': juego['precio'],
+                    'cantidad': cantidad,
+                    'costo': costo,
+                    
+                })
 
-            # Registrar compra
-            compras_usuarios.setdefault(user, []).append({
-                'fecha': datetime.now(),
-                'juego': juego['nombre'],
-                'precio': juego['precio'],
-                'cantidad': cantidad,
-                'costo': costo,
-                
-            })
-
-            print('Compra realizada con éxito!')
-            return
+                print('Compra realizada con éxito!')
+                input('\nPresiona Enter para volver...')
+                return
         
-        elif confirmar == 'no':
-            print('\nCompra cancelada')
-            return
-        
-        else:
-            print('\nRespuesta inválida\n')
+            elif confirmar == 'no':
+                print('\nCompra cancelada')
+                return
+            
+            else:
+                print('\nRespuesta inválida. Escribe si o no\n')
 
 
 def compras_hoy(usuario, compras_usuarios):
@@ -160,9 +122,9 @@ def compras_hoy(usuario, compras_usuarios):
 def mostrar_mis_compras():
     user = suscripcion.user_actual
 
-    print('\n'+'='*30)
+    print('\n' + '=' * 30)
     print('          Mis Compras')
-    print('='*30)
+    print('=' * 30)
     
     if user not in compras_usuarios or not compras_usuarios[user]:
         print('No has realizado compras')
@@ -187,30 +149,30 @@ def copias_compradas(user, nombre_juego):
     return total
 
 
-#MENÚ
-#========================
+# MENÚ DE LA TIENDA
+# ======================================
 
 def menu_tienda():
     if suscripcion.user_actual is None:
-        print('Debes estar suscrito para comprar')
+        print('\nDebes estar suscrito/a para acceder a la tienda')
         input('\nPresiona Enter para volver...')
         return
 
     while True:
-        print('\n'+'='*40)
+        print('\n' + '=' * 40)
         print('             Tienda Arcane')
-        print('='*40)
+        print('=' * 40)
         print('\n1. Comprar juegos')
         print('2. Ver mis compras')
         print('3. Atrás')
 
-        opcion = input('Elige una opción: ').strip()
+        selecc = pedir_numero('Elige una opción: ', 1,3)
 
-        if opcion == '1':
+        if selecc == 1:
             comprar_juegos()
-        elif opcion == '2':
+            
+        elif selecc == 2:
             mostrar_mis_compras()
-        elif opcion == '3':
+            
+        elif selecc == 3:
             return
-        else:
-            print('\nOpción inválida\n')

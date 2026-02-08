@@ -1,4 +1,4 @@
-from reservas import reservas_activas
+from inputs import pedir_numero
 
 usuarios = {}
 suscrito = False
@@ -6,62 +6,100 @@ user_actual = None
 cupon_disponible = False
 cupon_usado = False
 
+#REGISTRO
+#===========================================
+
 def suscrip ():
     global suscrito, user_actual
     
+    print('\nVamos a registrarte..')
+    
     while True:
-        print('\nVamos a registrarte..')
         nombre = input('Nombre: ').strip()
-        if not nombre:
-            print('Tu nombre no puede estar vacio')
+        
+        if nombre == 'atras':
+            return
+
+        if nombre == '':
+            print('\nTu nombre no puede estar vacío\n')
+            continue
+
+        if not nombre.isalpha():
+            print('\nTu nombre solo puede tener letras\n')
             continue
         
         while True:
-            carnet_str = input('Ingrese su carnet de identidad: ')
-            try:
-                id_user = int(carnet_str)
-                break
-            except ValueError:
-                print('Deben ser números enteros .Prueba otra vez')
+            carnet = input('Ingresa tu carnet de identidad (11 números): ').strip()
             
-        if id_user in usuarios:
-            print('Ese ID ya existe, ingrese otro')
-            continue
-        
-            #Guarda los datos en el diccionario
+            if carnet == 'atras':
+                return
+
+            if carnet == '':
+                print('\nTu ID no puede estar vacío\n')
+                continue
+
+            if not carnet.isdigit():
+                print('\nTu ID solo puede tener números enteros\n')
+                continue
+
+            if len(carnet) != 11:
+                print('\nEl ID debe tener exactamente 11 dígitos\n')
+                continue
+            
+            id_user = int(carnet)
+            
+            if id_user in usuarios:
+                print('\nEse ID ya existe\n')
+                continue
+
+            break
+         
+        # Registrar usuario y activar sesión           
         usuarios[id_user] = nombre
         suscrito = True
         user_actual = id_user
-        print('\nYa estás suscrito!!')
         
+        print('\nYa estás suscrito/a!')
+        input('\nPresiona Enter para volver...')
         return True
+    
         
-#Cancelar Suscripcion
+#CANCELAR SUSCRIPCIÓN
+# ==============================================
+
 def canc_suscrip():
-    from reservas import reservas_activas, cancelar_reserva
+    from estado import reservas_activas
+    from recursos_r import cancelar_reserva
     global suscrito, user_actual
     
     while True:
-        try:
-            print('Al cancelar tu suscripción se eliminarán las reservas que tengas')
-            id_cancel = int(input('Ingresa tu carnet para cancelar: '))
-            
-            # Cancelar reservas activas del usuario y liberar juegos
+        print('\nAl cancelar tu suscripción se eliminarán las reservas que tengas')
+        
+        confirmar = input('Seguro/a que quieres cancelar?: ').strip().lower()
+        
+        if confirmar == 'si':
+            # Cancela todas las reservas activas del usuario
             for r in reservas_activas[:]:
-                if r['usuario'] == id_cancel:
+                if r['usuario'] == user_actual:
                     cancelar_reserva(r)
             
-            if id_cancel in usuarios:
-                nombre = usuarios.pop(id_cancel)
-                suscrito = False
-                user_actual = None
-                print('Suscripción Cancelada')
-                return True
-            else:
-                print('ID no encontrado')
-        except ValueError:
-            print('Ingresa un número válido')
+            # Eliminar usuario del registro y cerrar sesión    
+            nombre = usuarios.pop(user_actual)
+            suscrito = False
+            user_actual = None
+            print('\nSuscripción Cancelada')
+            input('\nPresiona Enter para volver...')
+            return True
+        
+        elif confirmar == 'no':
+                return   
+                
+        else:
+            print('\nRespuesta inválida. Escribe si o no')       
             
+
+# MENÚ DE SUSCRIPCIÓN
+# =========================================
 
 def menu_suscrip():
     if suscrito:
@@ -69,23 +107,21 @@ def menu_suscrip():
         while True:
             nombre = usuarios.get(user_actual, 'Desconocido')
             
-            print('\n\tSuscrito\n')
+            print('\n' + '=' * 30)
+            print('         Suscrito/a')
+            print('=' * 30)
             print(f'Usuario: {nombre}')
             print(f'ID: {user_actual}')
-            print('-\n'*30)
+            print('\n'+'-'*30)
             
             print('1. Cancelar Suscripción')
             print('2. Atrás')
-            selecc = input('Elige una opción: ').strip()
             
-            if selecc == '1':
+            selecc = pedir_numero('\nElige una opción: ',1, 2)
+            
+            if selecc == 1:
                 if canc_suscrip():
                     return
-                else:
-                    print('\nNo se pudo cancelar')
-                    
-            elif selecc == '2':
+               
+            elif selecc == 2:
                 return
-            
-            else:
-                print('Opción inválida. Elige 1 o 2')

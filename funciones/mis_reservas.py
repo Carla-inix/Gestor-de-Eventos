@@ -1,17 +1,23 @@
 from datetime import datetime
-from reservas import reservas_activas, cancelar_reserva
+from estado import reservas_activas 
+from recursos_r import cancelar_reserva, liberar_reservas
+from inputs import pedir_numero
 import suscripcion
 
 
 def reservas_usuario():
+    liberar_reservas()
    
     while True:
-        print('\n\tMis Reservas\n')
+        print('\n' + '=' * 40)
+        print('              Mis Reservas')
+        print('=' * 40)
 
         if suscripcion.user_actual is None:
             print('No hay ningún usuario activo')
             input('\nPresiona Enter para volver...')
             return
+        
         
         # Obtener reservas del usuario
         mis_reservas = [
@@ -23,6 +29,7 @@ def reservas_usuario():
             print('No tienes reservas activas')
             input('\nPresiona Enter para volver...')
             return
+        
 
         # Mostrar reservas
         for i, reserva in enumerate(mis_reservas, 1):
@@ -30,60 +37,72 @@ def reservas_usuario():
             fin = reserva['fin'].strftime('%H:%M')
 
             print(f'{i}. {reserva['sala']['nombre']}')
-            print(f'   Horario: {inicio} - {fin}')
-            print(f'   Duración: {reserva['horas']} horas')
-            print(f'   Personas: {reserva['personas']}')
+            print(f'    Horario: {inicio} - {fin}')
+            print(f'    Duración: {reserva['horas']} horas')
+            print(f'    Personas: {reserva['personas']}')
             
             if reserva.get('recursos'):
                 equipos = ', '.join(
                     f'{r.replace('_', ' ')} {c}'
                     for r, c in reserva['recursos'].items()
                 )
-                print(f'   Equipos: {equipos}')
+                print(f'    Equipos: {equipos}')
 
             if reserva['juegos']:
-                print(f'   Juegos: {', '.join(reserva['juegos'])}')
+                print(f'    Juegos: {', '.join(reserva['juegos'])}')
 
             if reserva.get('descuento'):
-                print('   Descuento aplicado: 20%')
+                print('    Descuento aplicado: 20%')
 
             print('-' * 35)
+            
+        
 
-        # Menú de opciones
+        #MENÚ
+        #===============================
+        
         print('\nOpciones:')
-        print('1. Cancelar una reserva')
-        print('2. Cancelar todas las reservas')
-        print('3. Atrás')
+        print('1. Cancelar reservas')
+        print('2. Atrás')
 
         selecc = input('\nElige una opción: ').strip()
-
-        # Cancelar una reserva
+        
         if selecc == '1':
-            try:
-                num = int(input('Número de reserva a cancelar: '))
-                if num < 1 or num > len(mis_reservas):
-                    print('\nOpción inválida')
-                    continue
+            cancelar = input(
+                '\nEscribe los números de las reservas a cancelar '
+                '(ej: 1,3), todas o atras para volver: '
+            ).strip().lower()
 
-                cancelar_reserva(mis_reservas[num - 1])
-                print('\nReserva cancelada con éxito\n')
+            if cancelar == 'atras':
+                continue
 
-            except ValueError:
-                print('\nIngresa un número válido')
+            if cancelar == 'todas':
+                for r in mis_reservas[:]:
+                    cancelar_reserva(r)
 
-        # Cancelar todas
+                print('\nTodas las reservas han sido canceladas')
+                continue
+
+            partes = [x.strip() for x in cancelar.split(',')]
+
+            if not all(p.isdigit() for p in partes):
+                print('\nEntrada inválida\n')
+                continue
+
+            indices = sorted(set(int(p) for p in partes))
+
+            if any(i < 1 or i > len(mis_reservas) for i in indices):
+                print('\nEntrada inválida\n')
+                continue
+
+            for i in reversed(indices):
+                cancelar_reserva(mis_reservas[i - 1])
+
+            print('\nReservas canceladas con éxito')
+            input('\nPresiona Enter para continuar...')
+
         elif selecc == '2':
-            for r in reservas_activas[:]:
-                if r['usuario'] == suscripcion.user_actual:
-                   cancelar_reserva(r)
-                   
-            print('\nTodas las reservas han sido canceladas')
-            input('\nPresiona Enter para volver...')
-            return
-
-        # Volver
-        elif selecc == '3':
             return
 
         else:
-            print('\nOpción inválida')
+            print('\nOpción inválida\n')
