@@ -1,3 +1,4 @@
+#función reutilizable para pedir números al usuario, con validaciones integradas
 def pedir_numero(mensaje, minimo=None, maximo=None, atras=False):
 
     while True:
@@ -15,7 +16,7 @@ def pedir_numero(mensaje, minimo=None, maximo=None, atras=False):
             continue
 
         if valor != str(int(valor)):
-            print('\nNúmero inválido')
+            print('\nNo se permiten ceros al inicio')
             continue
 
         numero = int(valor)

@@ -1,10 +1,10 @@
-import suscripcion
-from estado import historial_reservas
+from . import suscripcion
+from . import estado
 
 
 def contar_reservas_usuario(id_usuario):
     contador = 0
-    for reserva in historial_reservas:
+    for reserva in estado.historial_reservas:
         if reserva.get('usuario') == id_usuario:
             contador += 1
             
@@ -23,7 +23,7 @@ def mostrar_ofertas():
 
     total = contar_reservas_usuario(suscripcion.user_actual)
 
-    print('Cupón para nuevos usuarios:')
+    print('Cupón para nuevos usuarios⭐:')
     print('Reserva 5 veces y obtén un cupón del 20% de descuento\n')
 
     print(f'Reservas realizadas: {total}')

@@ -1,78 +1,81 @@
-from reservas import reservar
-from estado import tiempo_actual
-from horarios_r import avanzar_tiempo, reset_tiempo
-import suscripcion
-import mis_reservas
-import tienda_arcane
-import ofertas
+from . import estado
+from .reservas import reservar
+from .horarios_r import avanzar_tiempo, reset_tiempo
+from .persistencia import guardar_estado, cargar_estado
+from . import suscripcion
+from . import mis_reservas
+from . import tienda_arcane
+from . import ofertas
 
+MODO_DEBUG = False
 
-MODO_DEBUG = True
 
 def mostrar_hora_actual():
-    print(f'\nFecha y hora: {tiempo_actual.strftime('%d-%m-%Y | %H:%M')}')
-    
+    print(f'\nFecha y hora: {estado.tiempo_actual.strftime("%d-%m-%Y | %H:%M")}')
+
+
 def mostrar_encabezado():
     print('\n' + '=' * 40)
-    print('         Arcane Gaming Lounge')
+    print('        Arcane Gaming Lounge')
     print('=' * 40)
-    print('Horario: 09:00 AM - 11:00 PM')
+    print('Horario: 9:00 AM - 11:00 PM')
     print('Contacto: arcane@gaming.com | Tel: +53 53529701')
     print('-' * 40)
-    
- 
+
+
 def menu_principal():
+    cargar_estado()
+
     while True:
         mostrar_encabezado()
         mostrar_hora_actual()
         print('-' * 40)
-        
+
         print('\n1. Reservar')
         print('2. Mis Reservas')
         print('3. Tienda Arcane')
         print('4. Suscripción')
         print('5. Ofertas')
-        print('6. Salir')
-        
+        print('6. Guardar y Salir')
+
         if MODO_DEBUG:
             print('\n7. Avanzar Tiempo (Modo Prueba)')
 
-        selecc = input('\nElige una opción: ')
+        selecc = input('\nElige una opción: ').strip()
+
         if selecc == '1':
             if suscripcion.suscrito:
                 reservar()
             else:
                 print('\nPara reservar necesitas estar suscrito/a')
-    
                 if suscripcion.suscrip():
                     reservar()
-                    
+
         elif selecc == '2':
             mis_reservas.reservas_usuario()
-                    
+
         elif selecc == '3':
             if suscripcion.suscrito:
                 tienda_arcane.menu_tienda()
             else:
                 print('\nPara acceder necesitas estar suscrito/a')
-    
                 if suscripcion.suscrip():
                     tienda_arcane.menu_tienda()
-        
+
         elif selecc == '4':
             if suscripcion.suscrito:
                 suscripcion.menu_suscrip()
-                
             else:
                 suscripcion.suscrip()
-                    
+
         elif selecc == '5':
             ofertas.mostrar_ofertas()
-            
+
         elif selecc == '6':
-           print('Hasta pronto')
-           break
-        
+            guardar_estado()
+            print('\nHasta pronto❤')
+            break
+
         elif selecc == '7' and MODO_DEBUG:
             while True:
                 print('\nMODO PRUEBA / SIMULACIÓN\n')
@@ -97,7 +100,6 @@ def menu_principal():
                         '\nEsto eliminará reservas y reiniciará el tiempo\n'
                         'Estás seguro/a? si/no: '
                     ).lower().strip()
-
                     if confirmar == 'si':
                         reset_tiempo()
 
@@ -106,8 +108,6 @@ def menu_principal():
 
                 else:
                     print('\nOpción inválida')
-                      
+
         else:
-            print('\nOpción inválida. Elige 1-7')
-    
-menu_principal()
+            print('\nOpción inválida. Elige del 1-6')

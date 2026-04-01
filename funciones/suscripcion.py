@@ -1,22 +1,24 @@
-from inputs import pedir_numero
+from .inputs import pedir_numero
 
-usuarios = {}
-suscrito = False
-user_actual = None
-cupon_disponible = False
-cupon_usado = False
+# Estado global del usuario en sesión
+usuarios = {}          
+suscrito = False       
+user_actual = None     
+cupon_disponible = False  
+cupon_usado = False       
 
-#REGISTRO
+
+# REGISTRO
 #===========================================
 
-def suscrip ():
+def suscrip():
     global suscrito, user_actual
     
     print('\nVamos a registrarte..')
     
     while True:
         nombre = input('Nombre: ').strip()
-        
+
         if nombre == 'atras':
             return
 
@@ -27,10 +29,10 @@ def suscrip ():
         if not nombre.isalpha():
             print('\nTu nombre solo puede tener letras\n')
             continue
-        
+
         while True:
             carnet = input('Ingresa tu carnet de identidad (11 números): ').strip()
-            
+
             if carnet == 'atras':
                 return
 
@@ -45,11 +47,11 @@ def suscrip ():
             if len(carnet) != 11:
                 print('\nEl ID debe tener exactamente 11 dígitos\n')
                 continue
-            
+
             id_user = int(carnet)
-            
+
             if id_user in usuarios:
-                print('\nEse ID ya existe\n')
+                print('\nEse ID ya está registrado\n')
                 continue
 
             break
@@ -58,45 +60,45 @@ def suscrip ():
         usuarios[id_user] = nombre
         suscrito = True
         user_actual = id_user
-        
-        print('\nYa estás suscrito/a!')
+
+        print('\nYa estás suscrito/a!❤️')
         input('\nPresiona Enter para volver...')
         return True
-    
-        
-#CANCELAR SUSCRIPCIÓN
+
+
+# CANCELAR SUSCRIPCIÓN
 # ==============================================
 
+#Cancela la suscripción del usuario actual
 def canc_suscrip():
-    from estado import reservas_activas
-    from recursos_r import cancelar_reserva
+    from . import estado
+    from .recursos_r import cancelar_reserva
     global suscrito, user_actual
-    
+
     while True:
-        print('\nAl cancelar tu suscripción se eliminarán las reservas que tengas')
-        
-        confirmar = input('Seguro/a que quieres cancelar?: ').strip().lower()
-        
+        print('\nAl cancelar tu suscripción se eliminarán todas tus reservas activas')
+
+        confirmar = input('Seguro/a que quieres cancelar? si/no: ').strip().lower()
+
         if confirmar == 'si':
             # Cancela todas las reservas activas del usuario
-            for r in reservas_activas[:]:
+            for r in estado.reservas_activas[:]:
                 if r['usuario'] == user_actual:
                     cancelar_reserva(r)
             
             # Eliminar usuario del registro y cerrar sesión    
-            nombre = usuarios.pop(user_actual)
             suscrito = False
             user_actual = None
             print('\nSuscripción Cancelada')
             input('\nPresiona Enter para volver...')
             return True
-        
+
         elif confirmar == 'no':
-                return   
-                
+            return
+
         else:
-            print('\nRespuesta inválida. Escribe si o no')       
-            
+            print('\nRespuesta inválida. Escribe si o no')
+
 
 # MENÚ DE SUSCRIPCIÓN
 # =========================================
@@ -106,22 +108,22 @@ def menu_suscrip():
         
         while True:
             nombre = usuarios.get(user_actual, 'Desconocido')
-            
+
             print('\n' + '=' * 30)
-            print('         Suscrito/a')
+            print('         Suscrito/a ❤')
             print('=' * 30)
             print(f'Usuario: {nombre}')
             print(f'ID: {user_actual}')
-            print('\n'+'-'*30)
-            
+            print('\n' + '-' * 30)
+
             print('1. Cancelar Suscripción')
             print('2. Atrás')
-            
-            selecc = pedir_numero('\nElige una opción: ',1, 2)
-            
+
+            selecc = pedir_numero('\nElige una opción: ', 1, 2)
+
             if selecc == 1:
                 if canc_suscrip():
                     return
-               
+
             elif selecc == 2:
                 return

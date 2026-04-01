@@ -1,5 +1,5 @@
-from estado import reservas_activas, juegos_reservados, tiempo_actual
-from datos import juegos_consola
+from . import estado
+from .datos import juegos_consola
 
 recursos_stock = {
     'sillas': 20,
@@ -44,7 +44,6 @@ def validar_dispo_recursos(sala):
     faltantes = {}
     for r, minimo in recursos_minimos.items():
         disponibles = recursos_stock.get(r, 0) - recursos_en_uso.get(r, 0)
-        
         if disponibles < minimo:
             faltantes[r] = minimo - disponibles
 
@@ -53,8 +52,7 @@ def validar_dispo_recursos(sala):
 
     # Busca la fecha más cercana de liberación
     prox_fechas = []
-
-    for reserva in reservas_activas:
+    for reserva in estado.reservas_activas:
         for r in faltantes:
             if r in reserva.get('recursos', {}):
                 prox_fechas.append(reserva['fin'])
@@ -72,12 +70,12 @@ def cancelar_reserva(reserva):
     if 'Consolas' in reserva['sala']['nombre']:
         for juego in reserva['juegos']:
             idx = juegos_consola.index(juego)
-            juegos_reservados.discard(idx)
+            estado.juegos_reservados.discard(idx)
 
     # Eliminar la reserva
-    if reserva in reservas_activas:
-        reservas_activas.remove(reserva)
-        
+    if reserva in estado.reservas_activas:
+        estado.reservas_activas.remove(reserva)
+
     # Libera los recursos
     for r, c in reserva.get('recursos', {}).items():
         recursos_en_uso[r] -= c
@@ -86,8 +84,8 @@ def cancelar_reserva(reserva):
 def liberar_reservas():
     terminadas = []
 
-    for reserva in reservas_activas[:]:
-        if tiempo_actual >= reserva['fin']:
+    for reserva in estado.reservas_activas[:]:
+        if estado.tiempo_actual >= reserva['fin']:
             terminadas.append(reserva)
 
     for r in terminadas:

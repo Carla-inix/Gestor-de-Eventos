@@ -1,0 +1,89 @@
+{
+    "tiempo_actual": "26-03-2026 | 13:38",
+    "reservas": {
+        "reservas_activas": [
+            {
+                "usuario": 97020825044,
+                "sala": "Arca: Realidad Virtual",
+                "inicio": "26-03-2026 | 16:00",
+                "fin": "26-03-2026 | 18:00",
+                "horas": 2,
+                "personas": 2,
+                "juegos": [],
+                "recursos": {
+                    "visores_rv": 2,
+                    "mandos_rv": 2,
+                    "caminadora_rv": 2
+                },
+                "costo": 1600.0,
+                "descuento": true
+            }
+        ],
+        "juegos_reservados": [
+            0,
+            2,
+            5
+        ]
+    },
+    "tienda": {
+        "juegos_disponibles": [
+            {
+                "nombre": "FIFA 24",
+                "precio": 350,
+                "stock": 1,
+                "descripcion": "Simulador de fútbol con equipos y ligas oficiales"
+            },
+            {
+                "nombre": "Assassin's Creed: Black Flag",
+                "precio": 500,
+                "stock": 4,
+                "descripcion": "Aventura de piratas con exploración naval y combate"
+            },
+            {
+                "nombre": "Spider-Man 2",
+                "precio": 500,
+                "stock": 4,
+                "descripcion": "Acción y mundo abierto controlando a Spider-Man"
+            },
+            {
+                "nombre": "Mario Kart 8",
+                "precio": 400,
+                "stock": 3,
+                "descripcion": "Carreras divertidas con personajes de Nintendo"
+            },
+            {
+                "nombre": "Bramble",
+                "precio": 500,
+                "stock": 2,
+                "descripcion": "Aventura oscura inspirada en cuentos nórdicos"
+            },
+            {
+                "nombre": "Resident Evil 4 Remake",
+                "precio": 600,
+                "stock": 1,
+                "descripcion": "Súrvival horror con acción y enemigos aterradores"
+            }
+        ],
+        "compras_usuarios": {
+            "5010128021": [
+                {
+                    "fecha": "26-03-2026 | 13:41",
+                    "juego": "FIFA 24",
+                    "precio": 350,
+                    "cantidad": 1,
+                    "costo": 350
+                }
+            ]
+        }
+    },
+    "usuarios": {
+        "user_actual": 97020825044,
+        "usuarios": {
+            "5010128021": "Carlos",
+            "97020825044": "Maria"
+        },
+        "suscrito": true,
+        "cupon_disponible": false,
+        "cupon_usado": true
+    }
+}
