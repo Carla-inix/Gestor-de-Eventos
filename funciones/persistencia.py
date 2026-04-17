@@ -26,6 +26,22 @@ def guardar_estado():
             'costo': r['costo'],
             'descuento': r['descuento'],
         })
+        
+    historial_serializado = []
+
+    for r in estado.historial_reservas:
+        historial_serializado.append({
+            'usuario': r['usuario'],
+            'sala': r['sala']['nombre'] if isinstance(r['sala'], dict) else r['sala'],
+            'inicio': r['inicio'].strftime('%d-%m-%Y | %H:%M') if hasattr(r['inicio'], 'strftime') else r['inicio'],
+            'fin': r['fin'].strftime('%d-%m-%Y | %H:%M') if hasattr(r['fin'], 'strftime') else r['fin'],
+            'horas': r.get('horas'),
+            'personas': r.get('personas'),
+            'juegos': r.get('juegos'),
+            'recursos': r.get('recursos'),
+            'costo': r.get('costo'),
+            'descuento': r.get('descuento'),
+        })
 
     # Serializar compras: datetime - texto
     compras_serializadas = {}
@@ -41,7 +57,8 @@ def guardar_estado():
 
         'reservas': {
             'reservas_activas': reservas_serializadas,
-            'juegos_reservados': list(estado.juegos_reservados)
+            'juegos_reservados': list(estado.juegos_reservados),
+            'historial_reservas': historial_serializado
         },
 
         'tienda': {
@@ -93,6 +110,8 @@ def cargar_estado():
         # Restaurar juegos reservados
         estado.juegos_reservados.clear()
         estado.juegos_reservados.update(datos['reservas']['juegos_reservados'])
+        
+        estado.historial_reservas = datos['reservas'].get('historial_reservas', [])
 
         # Restaurar tienda
         juegos_disponibles.clear()

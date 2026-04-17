@@ -132,8 +132,8 @@ arcane-gaming-lounge/
 
 ```bash
 # 1. Clonar el repositorio
-git 
-cd 
+git clone git@github.com:Carla-inix/Arcane-Gestor-de-Eventos.git
+cd Arcane-Gestor-de-Eventos
 
 # 2. Ejecutar el programa
 python main.py
